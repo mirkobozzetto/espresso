@@ -195,6 +195,41 @@ Other agents get the output rules via `AGENTS.md` — still 40-60% savings.
 
 ---
 
+## Troubleshooting
+
+### "Hook load failed: expected record, received undefined"
+
+Cached old version. Full reset:
+
+```
+/plugin uninstall espresso@espresso
+/plugin marketplace remove espresso
+/plugin marketplace add mirkobozzetto/espresso
+/plugin install espresso@espresso
+/reload-plugins
+```
+
+### Update to latest version
+
+```
+/plugin marketplace update espresso
+/reload-plugins
+```
+
+If still broken after update, do the full reset above.
+
+### "1 error during load" after /reload-plugins
+
+Run `/doctor` to see which plugin has the error.
+If it says `espresso@espresso` — do the full reset.
+If it says another plugin — espresso is fine, the error is elsewhere.
+
+### Plugin installed but no effect
+
+Restart Claude Code. Hooks only activate on session start.
+
+---
+
 ## Uninstall
 
 ### Claude Code
