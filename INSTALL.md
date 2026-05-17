@@ -36,6 +36,18 @@ cat ~/.claude/.espresso-setup-done         # setup timestamp
 ```
 
 ## Uninstall
+
+### Claude Code
 ```
 /uninstall-plugin espresso
 ```
+
+### Clean up created files
+```bash
+rm ~/.claude/rules/exa.md ~/.claude/rules/git.md ~/.claude/rules/gitnexus.md ~/.claude/rules/project-rules-suggestion.md
+rm ~/.claude/.espresso-active ~/.claude/.espresso-setup-done
+rm ~/.config/caveman/config.json
+```
+
+### Cursor / Windsurf / Others
+Delete the `AGENTS.md` you copied.

@@ -127,7 +127,7 @@ On first session (Claude Code / Codex), the install hook creates:
 ~/.claude/.espresso-setup-done     # First-run marker (prevents re-running)
 ```
 
-Nothing is created if it already exists. Run `/espresso off` to deactivate.
+Nothing is created if it already exists.
 
 ---
 
@@ -136,7 +136,7 @@ Nothing is created if it already exists. Run `/espresso off` to deactivate.
 Two hooks fire automatically:
 
 1. **SessionStart** — first run: scans existing setup, installs only what's missing, outputs summary. Every run: injects output rules as system context.
-2. **UserPromptSubmit** — reinforces rules every turn to prevent drift mid-session. Handles `/espresso off`.
+2. **UserPromptSubmit** — reinforces rules every turn to prevent drift mid-session.
 
 No skills, no extra files loaded in context. Pure hooks.
 
@@ -169,12 +169,25 @@ Other agents get the output rules via `AGENTS.md` — still 40-60% savings.
 
 ---
 
-## Commands
+## Uninstall
 
-| Command | What |
-|---------|------|
-| `/espresso off` | Deactivate (delete flag file) |
-| `/espresso` or `/espresso on` | Reactivate |
+### Claude Code
+```
+/uninstall-plugin espresso
+```
+
+### Clean up everything Espresso created
+```bash
+rm ~/.claude/rules/exa.md ~/.claude/rules/git.md ~/.claude/rules/gitnexus.md ~/.claude/rules/project-rules-suggestion.md
+rm ~/.claude/.espresso-active ~/.claude/.espresso-setup-done
+rm ~/.config/caveman/config.json
+```
+
+The RTK hook in `~/.claude/settings.json` stays (it's useful independently).
+Caveman plugin stays (uninstall separately with `/uninstall-plugin caveman` if wanted).
+
+### Cursor / Windsurf / Others
+Delete the `AGENTS.md` you copied, or remove `espresso.mdc` from `.cursor/rules/`.
 
 ---
 
