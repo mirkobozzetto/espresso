@@ -30,6 +30,7 @@ Installs once. Detects what you already have. Adds only what's missing.
 |---------------------|---------|-----|
 | **Output rules** | 40-60% | Enforces 120 char lines, forbidden openers/closers, result-first, no filler |
 | **Global rules** | context savings | Creates `~/.claude/rules/` — Exa search, clean git, GitNexus, project rules |
+| **GitNexus** | fewer file reads | Configures MCP server + auto-reindex hook (if GitNexus binary installed) |
 | **Caveman ultra** | ~75% | Sets compressed conversation mode (if Caveman plugin installed) |
 | **RTK hook** | 60-90% CLI | Adds CLI output compression hook (if RTK binary installed) |
 
@@ -121,13 +122,22 @@ Docs: [docs.exa.ai/docs/reference/exa-mcp](https://docs.exa.ai/docs/reference/ex
 Espresso auto-configures these **if already installed**. Install them for maximum savings:
 
 ```bash
-brew install rtk-ai/tap/rtk                # CLI output compression (60-90%)
+npm install -g gitnexus                     # Code intelligence — knowledge graph for your codebase
+brew install rtk-ai/tap/rtk                 # CLI output compression (60-90%)
 ```
 ```
 /install-plugin JuliusBrussee/caveman       # Conversation compression (~75%)
 ```
 
-Restart your agent after installing either. Espresso detects and configures on next session.
+Restart your agent after installing any of these. Espresso detects and configures on next session.
+
+### What each companion does
+
+**GitNexus** — builds a knowledge graph of your codebase (functions, classes, call chains, execution flows). Instead of Claude grepping through files to understand code, it queries the graph. Fewer file reads = fewer tokens. Espresso configures the MCP server and adds an auto-reindex hook that keeps the index fresh after every session.
+
+**RTK** (Rust Token Killer) — transparent proxy that compresses CLI output before it enters context. `git status`, `npm test`, `docker ps` output shrinks 60-90%. You run commands normally — RTK intercepts and compresses automatically via hook.
+
+**Caveman** — compresses Claude's conversation style. Drops articles, filler words, pleasantries, hedging. "Bug in auth middleware. Token expiry uses < not <=. Fix:" instead of 4 paragraphs. ~75% output token reduction.
 
 ---
 
@@ -143,6 +153,8 @@ On first session (Claude Code / Codex), the install hook creates:
 └── project-rules-suggestion.md    # Suggest rules in new projects
 
 ~/.config/caveman/config.json      # {"defaultMode": "ultra"} (if Caveman found)
+~/.claude.json → mcpServers.gitnexus  # GitNexus MCP server (if binary found)
+~/.claude/settings.json → hooks.Stop  # GitNexus auto-reindex (if binary found)
 ~/.claude/.espresso-active         # Mode flag
 ~/.claude/.espresso-setup-done     # First-run marker (prevents re-running)
 ```
@@ -182,6 +194,7 @@ Other agents get the output rules via `AGENTS.md` — still 40-60% savings.
 |-------|---------|----------------------|
 | Output rules | 40-60% | Always |
 | Global rules | context savings | Always (Claude Code / Codex) |
+| GitNexus | fewer file reads | If gitnexus binary found |
 | RTK | 60-90% CLI | If RTK binary found |
 | Caveman ultra | ~75% conversation | If Caveman plugin found |
 

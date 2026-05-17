@@ -5,11 +5,20 @@ const os = require('os');
 const { execSync } = require('child_process');
 
 const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
+const claudeJsonPath = path.join(os.homedir(), '.claude.json');
 const rulesDir = path.join(claudeDir, 'rules');
 const settingsPath = path.join(claudeDir, 'settings.json');
 const cavemanConfigDir = path.join(os.homedir(), '.config', 'caveman');
 const cavemanConfigPath = path.join(cavemanConfigDir, 'config.json');
 const setupFlag = path.join(claudeDir, '.espresso-setup-done');
+
+function readClaudeJson() {
+  try { return JSON.parse(fs.readFileSync(claudeJsonPath, 'utf8')); } catch (_) { return {}; }
+}
+
+function writeClaudeJson(data) {
+  fs.writeFileSync(claudeJsonPath, JSON.stringify(data, null, 2) + '\n');
+}
 
 const RULES = {
   'exa.md': [
@@ -132,6 +141,50 @@ function run() {
     }
   } else {
     optional.push('Caveman (75% savings): /install-plugin JuliusBrussee/caveman');
+  }
+
+  // 4. GitNexus
+  let gnBin = '';
+  try { gnBin = execSync('which gitnexus', { stdio: 'pipe' }).toString().trim(); } catch (_) {}
+
+  if (gnBin) {
+    const cj = readClaudeJson();
+    if (!cj.mcpServers) cj.mcpServers = {};
+
+    if (cj.mcpServers.gitnexus) {
+      skipped.push('GitNexus MCP (exists)');
+    } else {
+      cj.mcpServers.gitnexus = { command: gnBin, args: ['mcp'] };
+      writeClaudeJson(cj);
+      installed.push('GitNexus MCP server');
+    }
+
+    const s = readSettings();
+    if (!s.hooks) s.hooks = {};
+    let hasGnStop = false;
+    for (const entry of (s.hooks.Stop || [])) {
+      for (const h of (entry.hooks || [])) {
+        if (h.command && h.command.includes('gitnexus')) { hasGnStop = true; break; }
+      }
+      if (hasGnStop) break;
+    }
+
+    if (hasGnStop) {
+      skipped.push('GitNexus auto-reindex hook (exists)');
+    } else {
+      if (!s.hooks.Stop) s.hooks.Stop = [];
+      s.hooks.Stop.push({
+        hooks: [{
+          type: 'command',
+          command: "(npx gitnexus status 2>&1 | grep -q 'not indexed' && npx gitnexus analyze --silent) || true",
+          timeout: 30
+        }]
+      });
+      writeSettings(s);
+      installed.push('GitNexus auto-reindex (Stop hook)');
+    }
+  } else {
+    optional.push('GitNexus (code intelligence): npm install -g gitnexus');
   }
 
   // Write setup flag
