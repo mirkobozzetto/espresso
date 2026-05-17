@@ -1,0 +1,24 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/src/hooks/espresso-activate.js\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ],
+  "UserPromptSubmit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/src/hooks/espresso-remind.js\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

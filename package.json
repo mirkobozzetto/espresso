@@ -17,7 +17,6 @@
   ],
   "files": [
     ".claude-plugin/",
-    "skills/",
     "src/hooks/"
   ]
 }

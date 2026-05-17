@@ -4,115 +4,130 @@
 
 ![Espresso](espresso-hero.jpeg)
 
-**Concentrated Claude. Zero fluff, max power per token.**
+**One install. Full token-saving stack. Works on Claude Code, Codex, and more.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blue.svg)](https://github.com/mirkobozzetto/espresso)
 
-```
-/install-plugin mirkobozzetto/espresso
-```
-
 </div>
+
+---
+
+## The Problem
+
+Every AI coding agent produces verbose output by default.
+"Sure! I'd be happy to help. Let me walk you through this step by step..."
+That's tokens you pay for, time you waste reading, and context window you burn.
+
+Fixing it requires configuring multiple tools, writing rules, setting up hooks.
+Most developers don't bother.
+
+## What Espresso Does
+
+Installs once. Detects what you already have. Adds only what's missing.
+
+| What gets configured | Savings | How |
+|---------------------|---------|-----|
+| **Output rules** | 40-60% | Enforces 120 char lines, forbidden openers/closers, result-first, no filler |
+| **Global rules** | context savings | Creates `~/.claude/rules/` — Exa search, clean git, GitNexus, project rules |
+| **Caveman ultra** | ~75% | Sets compressed conversation mode (if Caveman plugin installed) |
+| **RTK hook** | 60-90% CLI | Adds CLI output compression hook (if RTK binary installed) |
+
+**Detection-first**: Espresso checks what's already configured and skips it.
+Never overwrites your existing rules or config. Never installs duplicates.
 
 ---
 
 ## Before / After
 
-> **Without Espresso:**
-> Sure! I'd be happy to help you with that. The issue you're experiencing is
-> likely caused by a misconfiguration in your authentication middleware. Let me
-> explain what's happening and walk you through the solution step by step.
-> First, let me look at the relevant files...
+```
+Without Espresso:
+  Sure! I'd be happy to help you with that. The issue you're
+  experiencing is likely caused by a misconfiguration in your
+  authentication middleware. Let me explain what's happening and
+  walk you through the solution step by step...
 
-> **With Espresso:**
-> Bug in auth middleware. Token expiry check uses `<` not `<=`.
-> Fix:
+With Espresso:
+  Bug in auth middleware. Token expiry check uses `<` not `<=`. Fix:
+```
 
-Same information. **~60% fewer tokens.**
-
----
-
-## What It Does
-
-| Rule | Effect |
-|------|--------|
-| **120 char line limit** | No walls of text |
-| **Bullet points by default** | Scannable output |
-| **Forbidden openers** | No "Sure!", "I'd be happy to", "Of course" |
-| **Forbidden closers** | No recaps, no "let me know if you have questions" |
-| **No filler words** | Cuts just/really/basically/actually/simply |
-| **Result-first** | Answer before explanation |
-| **No code comments** | Clean code output |
-| **No emojis** | Unless you ask |
+Same information. 70-85% fewer tokens with the full stack.
 
 ---
 
-## Commands
+## Install
 
-| Command | What it does |
-|---------|-------------|
-| `/espresso` | Activate espresso mode |
-| `/espresso off` | Deactivate |
-| `/espresso-rules` | Show all formatting rules |
-| `/espresso-guide` | Full token-saving stack guide |
+### Claude Code
 
----
+```
+/install-plugin mirkobozzetto/espresso
+```
 
-## Go Deeper — The Full Stack
+First session auto-configures everything. No manual setup.
 
-Espresso handles output formatting. For maximum token savings, combine with:
-
-### [RTK](https://github.com/rtk-ai/rtk) — 60-90% CLI savings
-
-Compresses output from git, npm, docker, cargo, kubectl.
-Transparent proxy — commands work normally, output shrinks.
+### OpenAI Codex
 
 ```bash
-brew install rtk-ai/tap/rtk
+codex plugin marketplace add mirkobozzetto/espresso
+codex plugin install espresso
 ```
 
-### [Caveman](https://github.com/JuliusBrussee/caveman) — 75% conversation compression
-
-Ultra-compressed communication mode.
-Drops articles, filler, pleasantries. Speaks like smart caveman.
-
-```
-/install-plugin JuliusBrussee/caveman
+Enable plugin hooks in `~/.codex/config.toml`:
+```toml
+[features]
+plugin_hooks = true
 ```
 
-### [GStack](https://github.com/garrytan/gstack) — Workflow optimization
+### Cursor / Windsurf / Copilot / Others
 
-Skills framework with QA testing, design review, shipping workflows, benchmarks.
-Efficient workflows = fewer wasted tokens.
+These agents don't support plugin hooks. Copy `AGENTS.md` from this repo to your project root:
 
-### Manual Config (the last 20%)
+```bash
+curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > AGENTS.md
+```
 
-Some optimizations can't be packaged in a plugin.
-Run `/espresso-guide` for copy-paste config blocks:
+Codex, Cursor, Windsurf, Copilot, Amp, and Devin all read `AGENTS.md` natively.
 
-- Disable adaptive thinking (`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1`)
-- Clean git commits (no "Generated with Claude Code" signatures)
-- Permission deny lists (block destructive commands)
-- Global rules files (`~/.claude/rules/`)
+For Cursor specifically, you can also copy to `.cursor/rules/espresso.mdc`:
+```bash
+mkdir -p .cursor/rules
+curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > .cursor/rules/espresso.mdc
+```
 
 ---
 
-## Combined Savings
+## Optional Companions
 
-<div align="center">
+Espresso auto-configures these **if already installed**. Install them for maximum savings:
 
-| Layer | Savings | Target |
-|:------|:-------:|:-------|
-| **Espresso** | 40-60% | Response formatting |
-| **RTK** | 60-90% | CLI command output |
-| **Caveman** | ~75% | Conversation style |
-| **GStack** | indirect | Workflow efficiency |
-| **Manual config** | ~10% | Misc optimizations |
+```bash
+brew install rtk-ai/tap/rtk                # CLI output compression (60-90%)
+```
+```
+/install-plugin JuliusBrussee/caveman       # Conversation compression (~75%)
+```
 
-**Full stack: 70-85% total token reduction** vs vanilla Claude Code.
+Restart your agent after installing either. Espresso detects and configures on next session.
 
-</div>
+---
+
+## What Gets Created
+
+On first session (Claude Code / Codex), the install hook creates:
+
+```
+~/.claude/rules/
+├── exa.md                         # Exa-only web search
+├── git.md                         # Clean commits (no signatures)
+├── gitnexus.md                    # GitNexus first for code exploration
+└── project-rules-suggestion.md    # Suggest rules in new projects
+
+~/.config/caveman/config.json      # {"defaultMode": "ultra"} (if Caveman found)
+~/.claude/.espresso-active         # Mode flag
+~/.claude/.espresso-setup-done     # First-run marker (prevents re-running)
+```
+
+Nothing is created if it already exists. Run `/espresso off` to deactivate.
 
 ---
 
@@ -120,11 +135,46 @@ Run `/espresso-guide` for copy-paste config blocks:
 
 Two hooks fire automatically:
 
-1. **SessionStart** — injects output rules as system context
-2. **UserPromptSubmit** — reinforces rules every turn so they don't drift
+1. **SessionStart** — first run: scans existing setup, installs only what's missing, outputs summary. Every run: injects output rules as system context.
+2. **UserPromptSubmit** — reinforces rules every turn to prevent drift mid-session. Handles `/espresso off`.
 
-No flag files to manage, no modes to switch.
-On by default, `/espresso off` to stop.
+No skills, no extra files loaded in context. Pure hooks.
+
+### Cross-Agent Compatibility
+
+| Agent | Method | Auto-install |
+|-------|--------|-------------|
+| **Claude Code** | Plugin hooks (SessionStart + UserPromptSubmit) | Yes — full stack |
+| **Codex** | Plugin hooks (compatible via `CLAUDE_PLUGIN_ROOT`) | Yes — full stack |
+| **Cursor** | `AGENTS.md` or `.cursor/rules/espresso.mdc` | No — rules only |
+| **Windsurf** | `AGENTS.md` | No — rules only |
+| **Copilot** | `AGENTS.md` | No — rules only |
+| **Others** | `AGENTS.md` at project root | No — rules only |
+
+Claude Code and Codex get the full stack (output rules + global rules + RTK hook + Caveman config).
+Other agents get the output rules via `AGENTS.md` — still 40-60% savings.
+
+---
+
+## Combined Savings
+
+| Layer | Savings | Installed by Espresso |
+|-------|---------|----------------------|
+| Output rules | 40-60% | Always |
+| Global rules | context savings | Always (Claude Code / Codex) |
+| RTK | 60-90% CLI | If RTK binary found |
+| Caveman ultra | ~75% conversation | If Caveman plugin found |
+
+**Full stack: 70-85% total token reduction** vs vanilla.
+
+---
+
+## Commands
+
+| Command | What |
+|---------|------|
+| `/espresso off` | Deactivate (delete flag file) |
+| `/espresso` or `/espresso on` | Reactivate |
 
 ---
 
