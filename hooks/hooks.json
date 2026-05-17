@@ -4,8 +4,9 @@
       "hooks": [
         {
           "type": "command",
-          "command": "node \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/src/hooks/espresso-activate.js\"",
-          "timeout": 5
+          "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-activate.js\"",
+          "timeout": 5,
+          "statusMessage": "Brewing espresso..."
         }
       ]
     }
@@ -15,8 +16,9 @@
       "hooks": [
         {
           "type": "command",
-          "command": "node \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/src/hooks/espresso-remind.js\"",
-          "timeout": 5
+          "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-remind.js\"",
+          "timeout": 5,
+          "statusMessage": "Espresso shot..."
         }
       ]
     }

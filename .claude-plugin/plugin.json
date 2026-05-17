@@ -4,31 +4,5 @@
   "author": {
     "name": "Mirko Bozzetto",
     "url": "https://github.com/mirkobozzetto"
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-activate.js\"",
-            "timeout": 5,
-            "statusMessage": "Brewing espresso..."
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-remind.js\"",
-            "timeout": 5,
-            "statusMessage": "Espresso shot..."
-          }
-        ]
-      }
-    ]
   }
 }
