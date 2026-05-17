@@ -96,6 +96,26 @@ curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md
 
 ---
 
+## Exa MCP — Web Search for Your Agent
+
+Espresso rules enforce Exa as the only web search tool. Exa is a free hosted MCP — **no API key required**.
+
+| Agent | Setup |
+|-------|-------|
+| **Claude Code** | `claude mcp add --transport http exa https://mcp.exa.ai/mcp` |
+| **Codex** | Add `exa` MCP in `.codex/config.toml` with URL `https://mcp.exa.ai/mcp` |
+| **Cursor** | Add to `~/.cursor/mcp.json`: `{"mcpServers": {"exa": {"url": "https://mcp.exa.ai/mcp"}}}` |
+| **VS Code** | Add to `.vscode/mcp.json`: `{"servers": {"exa": {"type": "http", "url": "https://mcp.exa.ai/mcp"}}}` |
+| **Claude Desktop** | Settings → Connectors → search "Exa" → click + |
+
+Free plan includes generous rate limits. For production use, add your API key:
+- Get one at [exa.ai/dashboard](https://dashboard.exa.ai/api-keys)
+- Add header: `"x-api-key": "YOUR_KEY"` to MCP config
+
+Docs: [docs.exa.ai/docs/reference/exa-mcp](https://docs.exa.ai/docs/reference/exa-mcp)
+
+---
+
 ## Optional Companions
 
 Espresso auto-configures these **if already installed**. Install them for maximum savings:
