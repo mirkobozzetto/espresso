@@ -58,42 +58,35 @@ Same information. 70-85% fewer tokens with the full stack.
 
 ## Install
 
-### Claude Code
+### Claude Code (in the Claude Code prompt)
+
+3 commands. Type them inside Claude Code, not in a regular terminal.
 
 ```
-/install-plugin mirkobozzetto/espresso
+/plugin marketplace add mirkobozzetto/espresso
+/plugin install espresso@espresso
+/reload-plugins
 ```
 
-First session auto-configures everything. No manual setup.
-
-### OpenAI Codex
+Or from a regular terminal:
 
 ```bash
-codex plugin marketplace add mirkobozzetto/espresso
-codex plugin install espresso
+claude plugin marketplace add mirkobozzetto/espresso
+claude plugin install espresso@espresso
 ```
 
-Enable plugin hooks in `~/.codex/config.toml`:
-```toml
-[features]
-plugin_hooks = true
-```
+Then restart Claude Code. First session auto-configures the full stack.
 
-### Cursor / Windsurf / Copilot / Others
+### Cursor / Windsurf / Copilot / Codex / Others
 
-These agents don't support plugin hooks. Copy `AGENTS.md` from this repo to your project root:
+These agents don't have plugin hooks. One command in your project root:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > AGENTS.md
 ```
 
-Codex, Cursor, Windsurf, Copilot, Amp, and Devin all read `AGENTS.md` natively.
-
-For Cursor specifically, you can also copy to `.cursor/rules/espresso.mdc`:
-```bash
-mkdir -p .cursor/rules
-curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > .cursor/rules/espresso.mdc
-```
+Codex, Cursor, Windsurf, Copilot, Amp, and Devin read `AGENTS.md` natively.
+You get the output rules (40-60% savings) but not the full stack auto-install.
 
 ---
 

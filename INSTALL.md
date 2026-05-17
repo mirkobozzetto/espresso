@@ -1,35 +1,34 @@
 # Install
 
 ## Claude Code
+
+Inside Claude Code (type these in the prompt, not in a terminal):
+
 ```
-/install-plugin mirkobozzetto/espresso
+/plugin marketplace add mirkobozzetto/espresso
+/plugin install espresso@espresso
+/reload-plugins
 ```
 
-## OpenAI Codex
+Or from terminal:
+
 ```bash
-codex plugin marketplace add mirkobozzetto/espresso
-codex plugin install espresso
-```
-Enable in `~/.codex/config.toml`:
-```toml
-[features]
-plugin_hooks = true
+claude plugin marketplace add mirkobozzetto/espresso
+claude plugin install espresso@espresso
 ```
 
-## Cursor / Windsurf / Copilot / Others
+Then restart Claude Code.
+
+## Cursor / Windsurf / Copilot / Codex / Others
+
+In your project root:
+
 ```bash
 curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > AGENTS.md
 ```
 
-## Optional (more savings)
-```bash
-brew install rtk-ai/tap/rtk               # 60-90% CLI compression
-```
-```
-/install-plugin JuliusBrussee/caveman      # 75% conversation compression
-```
+## Verify
 
-## Verify (Claude Code / Codex)
 ```bash
 ls ~/.claude/rules/                        # 4 rule files
 cat ~/.claude/.espresso-setup-done         # setup timestamp
@@ -37,17 +36,16 @@ cat ~/.claude/.espresso-setup-done         # setup timestamp
 
 ## Uninstall
 
-### Claude Code
+Inside Claude Code:
+
 ```
-/uninstall-plugin espresso
+/plugin uninstall espresso@espresso
 ```
 
-### Clean up created files
+Clean up created files:
+
 ```bash
 rm ~/.claude/rules/exa.md ~/.claude/rules/git.md ~/.claude/rules/gitnexus.md ~/.claude/rules/project-rules-suggestion.md
 rm ~/.claude/.espresso-active ~/.claude/.espresso-setup-done
 rm ~/.config/caveman/config.json
 ```
-
-### Cursor / Windsurf / Others
-Delete the `AGENTS.md` you copied.
