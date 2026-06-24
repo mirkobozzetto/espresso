@@ -10,7 +10,10 @@ const rulesDir = path.join(claudeDir, 'rules');
 const settingsPath = path.join(claudeDir, 'settings.json');
 const cavemanConfigDir = path.join(os.homedir(), '.config', 'caveman');
 const cavemanConfigPath = path.join(cavemanConfigDir, 'config.json');
+const ponytailConfigDir = path.join(os.homedir(), '.config', 'ponytail');
+const ponytailConfigPath = path.join(ponytailConfigDir, 'config.json');
 const setupFlag = path.join(claudeDir, '.espresso-setup-done');
+const ponytailDoneFlag = path.join(claudeDir, '.espresso-ponytail-done');
 
 function readClaudeJson() {
   try { return JSON.parse(fs.readFileSync(claudeJsonPath, 'utf8')); } catch (_) { return {}; }
@@ -201,9 +204,55 @@ function run() {
   return lines.join('\n');
 }
 
+// Installs the real DietrichGebert/ponytail plugin (same commands a user runs),
+// then pins its default mode. Own marker so update users get it too, even after
+// the main setup flag already exists. Runs once.
+function ensurePonytail() {
+  if (fs.existsSync(ponytailDoneFlag)) return '';
+
+  const ep = readSettings().enabledPlugins || {};
+  const out = [];
+
+  if (ep['ponytail@ponytail'] === true) {
+    out.push('Ponytail plugin (already installed)');
+  } else {
+    let claudeBin = false;
+    try { execSync('which claude', { stdio: 'pipe' }); claudeBin = true; } catch (_) {}
+
+    if (claudeBin) {
+      try {
+        execSync('claude plugin marketplace add DietrichGebert/ponytail', { stdio: 'pipe' });
+        execSync('claude plugin install ponytail@ponytail', { stdio: 'pipe' });
+        out.push('Ponytail plugin installed (restart to activate)');
+      } catch (_) {
+        out.push('Ponytail: /plugin marketplace add DietrichGebert/ponytail then /plugin install ponytail@ponytail');
+      }
+    } else {
+      out.push('Ponytail: /plugin marketplace add DietrichGebert/ponytail then /plugin install ponytail@ponytail');
+    }
+  }
+
+  // Ponytail's SessionStart hook reads this on next launch.
+  try {
+    let needsConfig = true;
+    try {
+      if (JSON.parse(fs.readFileSync(ponytailConfigPath, 'utf8')).defaultMode) needsConfig = false;
+    } catch (_) {}
+    if (needsConfig) {
+      fs.mkdirSync(ponytailConfigDir, { recursive: true });
+      fs.writeFileSync(ponytailConfigPath, '{"defaultMode": "ultra"}\n');
+      out.push('Ponytail → ultra default');
+    }
+  } catch (_) {}
+
+  try { fs.writeFileSync(ponytailDoneFlag, new Date().toISOString()); } catch (_) {}
+  return out.length ? 'Ponytail companion:\n  ' + out.join('\n  ') : '';
+}
+
 // Export for use by activate hook, or run directly
 if (require.main === module) {
   console.log(run());
+  console.log(ensurePonytail());
 } else {
-  module.exports = { run, setupFlag };
+  module.exports = { run, setupFlag, ensurePonytail };
 }

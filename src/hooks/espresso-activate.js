@@ -23,12 +23,16 @@ function safeWriteFlag(fp, content) {
 
 safeWriteFlag(flagPath, 'on');
 
-const { run, setupFlag } = require('./install.js');
+const { run, setupFlag, ensurePonytail } = require('./install.js');
 let setupOutput = '';
 try {
   if (!fs.existsSync(setupFlag)) {
     setupOutput = run() + '\n\n';
   }
+} catch (_) {}
+try {
+  const pony = ensurePonytail();
+  if (pony) setupOutput += pony + '\n\n';
 } catch (_) {}
 
 const RULES =
