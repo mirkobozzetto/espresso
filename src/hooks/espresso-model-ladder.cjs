@@ -136,7 +136,11 @@ function main() {
   const sessionTier = tierOf(sessionModel);
   if (!sessionTier) return; // cannot resolve: stay out of the way
 
-  const target = LADDER[sessionTier];
+  // Read-only exploration never needs reasoning: floor it at haiku, not one tier.
+  const EXPLORE_TYPES = new Set(["Explore"]);
+  const target = EXPLORE_TYPES.has(ti.subagent_type)
+    ? "haiku"
+    : LADDER[sessionTier];
   const requested = tierOf(ti.model);
   // already at or below the ladder tier: cheaper is always fine
   if (requested && RANK[requested] <= RANK[target]) return;
