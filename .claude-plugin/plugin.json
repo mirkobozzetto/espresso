@@ -13,6 +13,11 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-activate.js\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-model-ladder.cjs\"",
+            "timeout": 5
           }
         ]
       }
@@ -24,6 +29,18 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-remind.js\"",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-model-ladder.cjs\"",
+            "timeout": 10
           }
         ]
       }
