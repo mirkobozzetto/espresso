@@ -1,6 +1,6 @@
 {
   "name": "espresso",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Concise output, explicit economy routing, no automatic companion installation.",
   "author": {"name": "Mirko Bozzetto", "url": "https://github.com/mirkobozzetto"},
   "skills": "./skills",

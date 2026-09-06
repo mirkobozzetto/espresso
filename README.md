@@ -114,6 +114,41 @@ recursive extensions. It works only on the supplied text. State is per session:
 concise policy starts on, RTK starts off. `off` stops new policy injection and RTK
 rewriting; it cannot erase messages already sent to the model.
 
+### OMP automatic research mode
+
+`/espresso auto` enables standing authorization for substantial independent
+read-only research. `/espresso manual` returns to explicit delegation;
+`/espresso off` also clears automatic mode. These commands change session state.
+The default is manual. A personal OMP wrapper can opt in on every startup by
+calling the extension factory with `{auto: true}` as its second argument.
+The installer refuses to overwrite such a customized wrapper.
+
+The lead decides whether delegation is worthwhile after initial inspection.
+Instructions limit it to two lower-tier workers, no nested delegation, no edits,
+and no trivial tasks. These are model instructions, not an enforced scheduler
+or read-only sandbox. Explicit choices and stricter skill instructions win;
+skills that require fresh consent may still ask. No workers run while idle.
+
+[Anthropic’s research system](https://www.anthropic.com/engineering/multi-agent-research-system)
+supports the usefulness of parallel independent research, not a token-saving
+guarantee for Espresso or Astra. Espresso’s automatic policy still needs
+task-level evaluation; command and policy-transition checks are not proof of
+reliable delegation decisions.
+
+### Arsenal and Ship compatibility
+
+Arsenal owns skill selection and transitions. The selected skill owns approval
+gates, solo flags, specialized agents, model assignments, output schemas,
+artifact states, verification and commits. These take precedence over Espresso
+recommendations. Espresso must not create a competing team or extra reviewer,
+or use an external worker CLI to bypass a controlled runtime.
+
+Ship currently asks before each delegation: automatic Espresso mode does not
+remove that requirement. Likewise, `--no-agents` and solo mode remain solo.
+Existing workflows do not require Espresso and are not rewritten by it.
+This is instruction-level coexistence, not a verified end-to-end compatibility
+claim for every Arsenal skill or harness.
+
 ## Verification scope
 
 Local checks covered reminder removal, absence of startup writes, explicit-model

@@ -12,6 +12,17 @@ Stay solo for small tasks. Delegate only with authorization and when the
 assignment is substantial enough to justify another context. Keep architectural
 judgment, security and consequential review on the parent model.
 
+Active skills own their workflow. Arsenal selects and transitions between
+skills; Ship or the selected skill retains approvals, solo flags, specialized
+agents and models, schemas, artifact states, verification and commit rules.
+Espresso recommendations never override these, including per-delegation consent.
+Do not create a competing team/reviewer or bypass a controlled runtime with an
+external worker. These workflows remain usable without Espresso.
+
+OMP alone supports `/espresso auto` for substantial independent read-only
+research and `/espresso manual` to return to explicit delegation. This is an
+opt-in behavioral policy, not a sandbox or enforced concurrency limit.
+
 On OMP and Codex, explicitly installed Espresso workers use these fixed models:
 - `espresso-sol`: gpt-5.6-sol
 - `espresso-terra`: gpt-5.6-terra
