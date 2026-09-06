@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "espresso",
-  "description": "Concentrated Claude. Zero fluff, max power per token.",
+  "description": "Lightweight, evidence-preserving coding workflows across agent harnesses.",
   "owner": {
     "name": "Mirko Bozzetto",
     "url": "https://github.com/mirkobozzetto"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "espresso",
-      "description": "Output compression, forbidden patterns, result-first. Save 40-60% tokens on every response.",
+      "description": "Concise output, evidence-preserving workflows and explicit economy routing.",
       "source": "./",
       "category": "productivity"
     }

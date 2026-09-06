@@ -1,81 +1,37 @@
-# Install
+# Install Espresso 2.0
 
-## Claude Code
+See [README.md](README.md#install) for each harness’s actual capabilities and
+installation commands. GitHub hosts the Claude/Codex marketplace and the Pi
+package source; no separate marketplace submission is required.
 
-Inside Claude Code (type these in the prompt, not in a terminal):
+The adapter installer previews its complete file list by default:
 
-```
-/plugin marketplace add mirkobozzetto/espresso
-/plugin install espresso@espresso
-/reload-plugins
-```
-
-Or from terminal:
-
-```bash
-claude plugin marketplace add mirkobozzetto/espresso
-claude plugin install espresso@espresso
+```sh
+node src/hooks/install.js omp
+node src/hooks/install.js pi
+node src/hooks/install.js codex
 ```
 
-Then restart Claude Code.
+Add `--apply` only for the intended harness. Conflicting files cause an error;
+existing settings, providers, credentials and companion plugins are untouched.
+Keep this checkout in place when using a local extension reference.
 
-## Cursor / Windsurf / Copilot / Codex / Others
+Claude Code loads the checkout with `claude --plugin-dir /absolute/path/to/espresso`.
+Pi can install the package with `pi install /absolute/path/to/espresso`.
+Codex requires a configured marketplace and trust approval for bundled hooks.
 
-In your project root:
+## Existing Espresso 1.x installations
 
-```bash
-curl -sL https://raw.githubusercontent.com/mirkobozzetto/espresso/main/AGENTS.md > AGENTS.md
-```
+Updating the plugin stops new automatic installation/configuration actions.
+It does not remove previously installed global rules, RTK/GitNexus hooks or
+Caveman/Ponytail settings. Those files may now contain user changes; back them
+up and review ownership before modifying them. Do not run blanket `rm` commands
+against global rules or companion configuration.
 
-## Verify
+## Remove the local adapter
 
-```bash
-ls ~/.claude/rules/                        # 6 rule files
-cat ~/.claude/.espresso-setup-done         # setup timestamp
-```
-
-## Model ladder only (no full stack)
-
-Want just the cheaper-worker fallback, not caveman/ponytail/rules? The ladder
-hook is self-contained (one file, zero dependencies). Copy it and register it
-in your own `settings.json`:
-
-```bash
-cp "$(claude plugin root espresso 2>/dev/null || echo .)/src/hooks/espresso-model-ladder.cjs" ~/.claude/hooks/
-```
-
-Then add two hook entries to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      { "hooks": [{ "type": "command", "command": "node ~/.claude/hooks/espresso-model-ladder.cjs", "timeout": 5 }] }
-    ],
-    "PreToolUse": [
-      { "matcher": "Agent|Task", "hooks": [{ "type": "command", "command": "node ~/.claude/hooks/espresso-model-ladder.cjs", "timeout": 10 }] }
-    ]
-  }
-}
-```
-
-Restart Claude Code. Every subagent now spawns one tier below the session model.
-Disable anytime with `touch ~/.claude/.espresso-ladder-off`.
-
-## Uninstall
-
-Inside Claude Code:
-
-```
-/plugin uninstall espresso@espresso
-```
-
-Clean up created files:
-
-```bash
-rm ~/.claude/rules/exa.md ~/.claude/rules/git.md ~/.claude/rules/gitnexus.md ~/.claude/rules/project-rules-suggestion.md
-rm ~/.claude/rules/subagent-model-economy.md ~/.claude/rules/subagent-delegation.md
-rm ~/.claude/.espresso-active ~/.claude/.espresso-setup-done ~/.claude/.espresso-ponytail-done
-rm -f ~/.claude/.espresso-ladder-off
-rm ~/.config/caveman/config.json ~/.config/ponytail/config.json
-```
+Use the preview list to identify the files created for the selected harness.
+Remove only files still owned by Espresso, then restart that harness. A package
+installed by a harness should be removed by that harness's package manager.
+No model roles or credential configuration needs restoring because the installer
+does not change them.

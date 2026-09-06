@@ -1,45 +1,21 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-
-const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
-const flagPath = path.join(claudeDir, '.espresso-active');
-
-let input = '';
-process.stdin.on('data', chunk => { input += chunk; });
-process.stdin.on('end', () => {
-  try {
-    const data = JSON.parse(input);
-    const prompt = (data.prompt || '').trim().toLowerCase();
-
-    if (prompt === '/espresso off' || prompt === '/espresso stop') {
-      try { fs.unlinkSync(flagPath); } catch (_) {}
-      return;
-    }
-
-    if (prompt === '/espresso' || prompt === '/espresso on') {
-      try {
-        fs.writeFileSync(flagPath, 'on', { mode: 0o600 });
-      } catch (_) {}
-    }
-
-    let active = false;
-    try {
-      const st = fs.lstatSync(flagPath);
-      active = st.isFile() && !st.isSymbolicLink();
-    } catch (_) {}
-
-    if (active) {
-      process.stdout.write(JSON.stringify({
-        hookSpecificOutput: {
-          hookEventName: "UserPromptSubmit",
-          additionalContext:
-            "ESPRESSO MODE ACTIVE. " +
-            "Max 120 chars/line. Bullet points default. No filler/hedging/pleasantries. " +
-            "Result first. No recap. No code comments. Fragments OK."
-        }
-      }));
-    }
-  } catch (_) {}
-});
+"use strict";
+const fs = require("node:fs");
+const { POLICY } = require("../core.cjs");
+try {
+  const data = JSON.parse(fs.readFileSync(0, "utf8"));
+  const prompt = String(data.prompt || "").trim();
+  if (!/^\/espresso(?: (?:on|off|status))?$/.test(prompt)) process.exit(0);
+  const mode = prompt.split(" ")[1] || "on";
+  const text = mode === "off"
+    ? "Espresso style is off for this conversation. Follow the user's requested level of detail."
+    : mode === "status"
+      ? "Espresso provides concise, evidence-preserving style. No companion plugins are installed. Model routing preserves explicit choices."
+      : POLICY;
+  process.stdout.write(JSON.stringify({hookSpecificOutput: {
+    hookEventName: "UserPromptSubmit", additionalContext: text,
+  }}));
+} catch (error) {
+  process.stderr.write(`Espresso command: ${error.message}\n`);
+  process.exitCode = 1;
+}

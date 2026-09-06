@@ -1,49 +1,12 @@
 {
   "name": "espresso",
-  "description": "Concentrated Claude. Zero fluff, max power per token.",
-  "author": {
-    "name": "Mirko Bozzetto",
-    "url": "https://github.com/mirkobozzetto"
-  },
+  "version": "2.0.0",
+  "description": "Concise output, explicit economy routing, no automatic companion installation.",
+  "author": {"name": "Mirko Bozzetto", "url": "https://github.com/mirkobozzetto"},
+  "skills": "./skills",
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-activate.js\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-model-ladder.cjs\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-remind.js\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Agent|Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-model-ladder.cjs\"",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+    "SessionStart": [{"hooks": [{"type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-activate.js\"", "timeout": 5}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-remind.js\"", "timeout": 5}]}],
+    "PreToolUse": [{"matcher": "Agent|Task", "hooks": [{"type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/espresso-model-ladder.cjs\"", "timeout": 5}]}]
   }
 }
