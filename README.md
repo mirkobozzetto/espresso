@@ -2,7 +2,7 @@
 
 ![Espresso](https://raw.githubusercontent.com/mirkobozzetto/espresso/main/espresso-hero.jpeg)
 
-**Less filler. Less unnecessary context. Right-sized delegation.**
+**Less filler. Less unnecessary context. Same model, right effort.**
 
 Lightweight workflows for Claude Code, Codex, OMP and Pi. Keep explanations,
 evidence and useful code comments, without repetitive reminders or automatic
@@ -15,7 +15,7 @@ changes to your global settings.
 | No ordinary-prompt reminders | Removes Espresso's repeated reminder payload | Eliminates that input overhead compared with Espresso 1.x; total session savings are unmeasured |
 | Concise policy | Asks for direct answers and the smallest correct change | Aims to reduce unnecessary prose and code; output length and quality remain model-dependent |
 | Optional RTK | Filters supported command output before it enters context | Can reduce tool-output volume; RTK reports bytes removed and estimated tokens, not total session or subscription savings |
-| Model ladder | Sends suitable bounded work to a lower model tier | Changes which model does the work, not the number of tokens; delegation adds overhead and is not a quota-saving guarantee |
+| Same-model delegation | Delegated agents keep the session model | Avoids the quality loss and retries of cheaper workers; each agent still pays its own startup context |
 
 Espresso does not enlarge the context window or erase existing history.
 Its policy also occupies context. We have verified the integrations, not measured
@@ -51,7 +51,7 @@ Its authors' [agentic benchmark](https://github.com/DietrichGebert/ponytail/blob
 reports less code and fewer tokens on 12 feature tasks with Haiku 4.5, four runs
 per task and condition. Gains are largest where custom code can be replaced by
 native features, and small or absent where the implementation is already minimal.
-These are Ponytail's results, not Espresso measurements or evidence for Astra/Sol.
+These are Ponytail's results, not Espresso measurements.
 The authors also warn that reasoning overhead can increase cost on GPT-5.5.
 
 Use it to reduce unnecessary implementation, not to chase the fewest lines.
@@ -62,31 +62,24 @@ security and accessibility must remain intact.
 
 | Harness | Policy | Delegation |
 |---|---|---|
-| Claude Code | SessionStart hook and skill | Automatic ladder for unpinned generic Claude workers |
-| Codex | Trusted SessionStart hook and skill | Explicit named GPT agents |
-| OMP | Extension and skill | Named GPT agents and an explicit text-only worker |
+| Claude Code | SessionStart hook and skill | Native subagents on the session model |
+| Codex | Trusted SessionStart hook and skill | Native agents on the session model |
+| OMP | Extension and skill | Native agents and an explicit text-only worker |
 | Pi | Extension and skill | Explicit text-only worker; core Pi has no subagent tool |
 
-GPT tiers: **Astra → Sol → Terra → Luna**, with Luna as the floor.
-Named agents are `espresso-sol`, `espresso-terra` and `espresso-luna`.
-OMP workers use the subscription provider `openai-codex`; Codex agents inherit
-their provider. The OMP/Pi text worker checks model availability on the same
-provider before launching. Explicit model choices and specialist agents are
-preserved. Keep consequential review on the parent model; do not delegate trivial
-work or spawn workers without authorization.
+Espresso no longer routes delegated work to a cheaper model. With a strong
+session model, adding agents brings no gain or a loss on sequential coding
+work ([260-configuration study](https://arxiv.org/abs/2512.08296)), and cheaper
+workers can cost more per solved task once retries are counted. Delegate only
+substantial read-only research or work whose output would flood the main
+context; keep edits and consequential review on the main thread. Explicit model
+choices and specialist agents are preserved.
 
-In OMP/Pi, the text-only worker defaults to low thinking. Use
-`/espresso effort low|medium|high` to set it for this session;
-`/espresso effort` and `/espresso status` report it. This setting applies
-only to `/espresso worker`, not native named agents.
-
-Configure native OMP workers through `task.agentModelOverrides` in
-`~/.omp/agent/config.yml`, with an explicit model and effort suffix, for
-example `espresso-sol: openai-codex/gpt-5.6-sol:low`. Restart the OMP session
-after changing its configuration. Keep low for simple lookup/extraction and
-medium/high for deeper analysis or consequential review. Before delegating,
-announce the agent, resolved model, effort and reason; do not infer effort
-from the parent. Codex worker settings are independent.
+In OMP/Pi, the text-only worker runs on the session model and follows the
+session thinking level (low on OMP). Use `/espresso effort low|medium|high` to
+set it for this session; `/espresso effort` and `/espresso status` report it.
+This setting applies only to `/espresso worker`, not native named agents.
+Before delegating, announce the agent, resolved model, effort and reason.
 
 ## Install
 
@@ -107,14 +100,14 @@ Review and trust the hooks in Codex before starting a new thread.
 
 **Pi**: `pi install git:github.com/mirkobozzetto/espresso`
 
-**OMP**, or named GPT agents for Codex, from a permanent checkout:
+**OMP**, from a permanent checkout:
 ```sh
 git clone https://github.com/mirkobozzetto/espresso.git
 cd espresso
 node src/hooks/install.js omp --apply
 ```
 
-For Codex's named GPT agents, run `node src/hooks/install.js codex --apply`.
+For Codex skills without the marketplace, run `node src/hooks/install.js codex --apply`.
 Pi can alternatively use `node src/hooks/install.js pi --apply` for the extension
 and skill. Omit `--apply` to preview adapter files. Conflicting files are refused;
 settings, credentials and model overrides are untouched. Restart the harness.
@@ -129,13 +122,12 @@ Caveman/Ponytail installations and old global rules are not deleted automaticall
 /espresso status
 /espresso on
 /espresso off
-/espresso ladder
 /espresso worker Summarize this supplied text: ...
 /espresso rtk-on
 /espresso rtk-off
 ```
 
-The worker launches the same CLI on a lower available tier, with no tools or
+The worker launches the same CLI on the session model, with no tools or
 recursive extensions. It works only on the supplied text. State is per session:
 concise policy starts on, RTK starts off. `off` stops new policy injection and RTK
 rewriting; it cannot erase messages already sent to the model.
@@ -150,14 +142,14 @@ calling the extension factory with `{auto: true}` as its second argument.
 The installer refuses to overwrite such a customized wrapper.
 
 The lead decides whether delegation is worthwhile after initial inspection.
-Instructions limit it to two lower-tier workers, no nested delegation, no edits,
+Instructions limit it to two workers on the session model, no nested delegation, no edits,
 and no trivial tasks. These are model instructions, not an enforced scheduler
 or read-only sandbox. Explicit choices and stricter skill instructions win;
 skills that require fresh consent may still ask. No workers run while idle.
 
 [Anthropic’s research system](https://www.anthropic.com/engineering/multi-agent-research-system)
 supports the usefulness of parallel independent research, not a token-saving
-guarantee for Espresso or Astra. Espresso’s automatic policy still needs
+guarantee for Espresso. Espresso’s automatic policy still needs
 task-level evaluation; command and policy-transition checks are not proof of
 reliable delegation decisions.
 
