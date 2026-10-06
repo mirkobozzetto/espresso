@@ -16,7 +16,10 @@ function run(args = process.argv.slice(2)) {
   const config = harness === "omp" ? process.env.PI_CODING_AGENT_DIR || path.join(home, ".omp/agent")
     : harness === "pi" ? process.env.PI_CODING_AGENT_DIR || path.join(home, ".pi/agent")
     : process.env.CODEX_HOME || path.join(home, ".codex");
-  const files = [[path.join(config, "skills/espresso/SKILL.md"), fs.readFileSync(path.join(root, "skills/espresso/SKILL.md"), "utf8")]];
+  const files = fs.readdirSync(path.join(root, "skills"), {withFileTypes: true})
+    .filter(entry => entry.isDirectory())
+    .map(entry => [path.join(config, "skills", entry.name, "SKILL.md"),
+      fs.readFileSync(path.join(root, "skills", entry.name, "SKILL.md"), "utf8")]);
   if (harness !== "codex") {
     files.push([path.join(config, "extensions/espresso.ts"), `export { default } from ${JSON.stringify(path.join(root, "src/extension.ts"))};\n`]);
   }

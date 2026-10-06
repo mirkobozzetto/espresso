@@ -44,5 +44,11 @@ default: `/espresso rtk-on` enables supported simple read-only Git commands;
 `/espresso rtk-off` restores native shell commands. Raw diffs, test failures,
 compound shell commands and custom scripts are never compressed automatically.
 
-No Caveman or Ponytail dependency. No automatic package installation, global
-rule injection, model-provider switch or credential changes.
+Ponytail is bundled, enabled in full mode unless existing preferences override
+it. In OMP/Pi, `/ponytail` opens the mode selector; `/ponytail off` disables
+it for this session and `/ponytail default off` changes future sessions.
+The six Ponytail skills remain available independently of its runtime mode.
+Active workflows retain their requested scope, consent and verification rules;
+Ponytail never authorizes scope cuts or permanent tests that those rules forbid.
+No Caveman dependency, startup downloads, model-provider switch or credential
+changes.

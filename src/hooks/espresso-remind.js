@@ -10,7 +10,7 @@ try {
   const text = mode === "off"
     ? "Espresso style is off for this conversation. Follow the user's requested level of detail."
     : mode === "status"
-      ? "Espresso provides concise, evidence-preserving style. No companion plugins are installed. Model routing preserves explicit choices."
+      ? "Espresso provides concise, evidence-preserving style and bundled Ponytail. Use /ponytail status for its mode. Model routing preserves explicit choices."
       : POLICY;
   process.stdout.write(JSON.stringify({hookSpecificOutput: {
     hookEventName: "UserPromptSubmit", additionalContext: text,

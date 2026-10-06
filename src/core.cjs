@@ -18,7 +18,11 @@ function lowerModel(model, available) {
   if (tier < 0) return null;
   const next = CLAUDE[Math.min(tier + 1, CLAUDE.length - 1)];
   if (!available) return provider ? null : next;
-  return available.find(m => m.startsWith(provider + `claude-${next}-`)) || null;
+  // Newest match, not the first: a catalog listing claude-sonnet-4-5 before
+  // claude-sonnet-5 would otherwise always pick the legacy model. Numeric
+  // compare so claude-sonnet-10 beats claude-sonnet-5 when that lands.
+  return available.filter(m => m.startsWith(provider + `claude-${next}-`))
+    .sort((a, b) => b.localeCompare(a, undefined, {numeric: true}))[0] || null;
 }
 
 function rewriteCommand(command) {

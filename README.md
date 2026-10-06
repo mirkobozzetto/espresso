@@ -27,12 +27,25 @@ Diffs, tests, patch logs and scripts stay untouched. Missing RTK or a failed
 rewrite leaves the original command intact. Existing RTK hooks are independent.
 See [RTK's measurement definition](https://github.com/rtk-ai/rtk/blob/develop/docs/guide/analytics/gain.md).
 
-## Smaller code: optional Ponytail
+## Smaller code: Ponytail included
 
-[Ponytail](https://github.com/DietrichGebert/ponytail) is a separate, optional
-companion for avoiding over-engineering: reuse existing code, prefer the standard
-library and native platform features, and avoid speculative abstractions.
-Espresso neither bundles nor installs it automatically.
+Espresso bundles the real [Ponytail](https://github.com/DietrichGebert/ponytail)
+4.9.0 runtime and all six upstream skills, with its MIT license and pinned
+source commit in `ponytail-upstream.json`. No separate installation or startup
+download is needed. It starts in **full** mode unless an existing Ponytail
+configuration or `PONYTAIL_DEFAULT_MODE` overrides that default.
+
+In OMP and Pi, **`/ponytail` opens a selector**: full, lite, ultra, off or status.
+`/ponytail off` disables it for the session; `/ponytail default off` changes the
+default for future sessions. Use `/ponytail default full` to restore it.
+Headless commands show status instead of opening a menu. Claude/Codex use the
+bundled skills and lifecycle hooks; they do not get the OMP/Pi native selector.
+
+Also included: `ponytail-review`, `ponytail-audit`, `ponytail-gain`,
+`ponytail-debt` and `ponytail-help`. Use their slash commands in OMP/Pi,
+plugin skill commands in Claude, and skill invocation in Codex.
+Espresso and Ponytail have independent switches. Avoid enabling a second,
+standalone Ponytail extension alongside the bundled one.
 
 Its authors' [agentic benchmark](https://github.com/DietrichGebert/ponytail/blob/main/benchmarks/results/2026-06-18-agentic.md)
 reports less code and fewer tokens on 12 feature tasks with Haiku 4.5, four runs
@@ -61,6 +74,19 @@ their provider. The OMP/Pi text worker checks model availability on the same
 provider before launching. Explicit model choices and specialist agents are
 preserved. Keep consequential review on the parent model; do not delegate trivial
 work or spawn workers without authorization.
+
+In OMP/Pi, the text-only worker defaults to low thinking. Use
+`/espresso effort low|medium|high` to set it for this session;
+`/espresso effort` and `/espresso status` report it. This setting applies
+only to `/espresso worker`, not native named agents.
+
+Configure native OMP workers through `task.agentModelOverrides` in
+`~/.omp/agent/config.yml`, with an explicit model and effort suffix, for
+example `espresso-sol: openai-codex/gpt-5.6-sol:low`. Restart the OMP session
+after changing its configuration. Keep low for simple lookup/extraction and
+medium/high for deeper analysis or consequential review. Before delegating,
+announce the agent, resolved model, effort and reason; do not infer effort
+from the parent. Codex worker settings are independent.
 
 ## Install
 
@@ -151,8 +177,8 @@ claim for every Arsenal skill or harness.
 
 ## Verification scope
 
-Local checks covered reminder removal, absence of startup writes, explicit-model
-preservation, installer idempotence and conflict refusal, toggles and selective
+Local checks covered reminder removal, explicit-model preservation,
+installer idempotence and conflict refusal, toggles and selective
 RTK rewriting. Real OMP and Pi text workers returned replies using the selected
 Luna CLI configuration. Claude's manifest and direct hooks were checked; Codex's
 plugin installation was checked in an isolated configuration. Full Claude/Codex

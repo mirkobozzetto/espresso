@@ -4,7 +4,9 @@
   "description": "Concise output without sacrificing evidence or uncertainty.",
   "skills": "./skills",
   "hooks": {
-    "SessionStart": [{"hooks": [{"type": "command", "command": "node \"${PLUGIN_ROOT}/src/hooks/espresso-activate.js\"", "timeout": 5}]}],
-    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "node \"${PLUGIN_ROOT}/src/hooks/espresso-remind.js\"", "timeout": 5}]}]
+    "hooks": {
+      "SessionStart": [{"hooks":[{"type":"command","command":"node \"${PLUGIN_ROOT}/src/hooks/ponytail.js\" SessionStart","timeout":5}]}],
+      "UserPromptSubmit": [{"hooks":[{"type":"command","command":"node \"${PLUGIN_ROOT}/src/hooks/espresso-remind.js\"","timeout":5},{"type":"command","command":"node \"${PLUGIN_ROOT}/src/hooks/ponytail.js\" UserPromptSubmit","timeout":5}]}]
+    }
   }
 }
