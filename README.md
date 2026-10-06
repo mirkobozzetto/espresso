@@ -25,6 +25,7 @@ RTK is **off by default** in the OMP/Pi extension. The integration only consider
 simple `git status` and `git log --oneline` commands with a small flag allowlist.
 Diffs, tests, patch logs and scripts stay untouched. Missing RTK or a failed
 rewrite leaves the original command intact. Existing RTK hooks are independent.
+Checked with RTK 0.51.0.
 See [RTK's measurement definition](https://github.com/rtk-ai/rtk/blob/develop/docs/guide/analytics/gain.md).
 
 ## Smaller code: Ponytail included
@@ -169,11 +170,12 @@ claim for every Arsenal skill or harness.
 
 ## Verification scope
 
-Local checks covered reminder removal, explicit-model preservation,
-installer idempotence and conflict refusal, toggles and selective
-RTK rewriting. Real OMP and Pi text workers returned replies using the selected
-Luna CLI configuration. Claude's manifest and direct hooks were checked; Codex's
-plugin installation was checked in an isolated configuration. Full Claude/Codex
-delegation sessions and comparative token/quality benchmarks were not run.
+Local checks for 2.2.0: `claude plugin validate`, every Claude hook run
+directly (per-project Ponytail modes, mode commands, visible status line,
+silence on Codex), the OMP/Pi extension against a simulated host (string, array
+and section prompts, same-model worker), selective RTK rewriting with RTK
+0.51.0, and a Codex 0.160.1 install in an isolated configuration listing the
+three bundled hooks. Full delegation sessions and comparative token/quality
+benchmarks were not run.
 
 MIT License.
