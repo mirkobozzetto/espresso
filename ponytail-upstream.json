@@ -1,0 +1,9 @@
+{
+  "name": "Ponytail",
+  "version": "4.13.0",
+  "repository": "https://github.com/DietrichGebert/ponytail",
+  "commit": "08e952d7a8057a57ce561ff1330d093fd92eec67",
+  "license": "PONYTAIL-LICENSE",
+  "unmodifiedSources": ["hooks/ponytail-config.js", "hooks/ponytail-instructions.js", "hooks/ponytail-runtime.js", "pi-extension/index.js", "pi-extension/package.json", "skills/ponytail*"],
+  "adapters": ["src/extension.ts", "src/hooks/ponytail.js"]
+}
