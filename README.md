@@ -84,35 +84,42 @@ Before delegating, announce the agent, resolved model, effort and reason.
 
 ## Install
 
-Node.js is required for hooks and the adapter installer.
+Node.js is required for hooks and the adapter installer. Restart the harness
+after installing or updating.
 
-**Claude Code** (run each command separately):
-```text
-/plugin marketplace add mirkobozzetto/espresso
-/plugin install espresso@espresso
-```
+| Harness | Install | Update |
+|---|---|---|
+| Claude Code | `claude plugin marketplace add mirkobozzetto/espresso`<br>`claude plugin install espresso@espresso` | `claude plugin marketplace update espresso`<br>`claude plugin update espresso@espresso` |
+| Codex | `codex plugin marketplace add mirkobozzetto/espresso`<br>`codex plugin add espresso@espresso` | `codex plugin marketplace upgrade espresso`<br>`codex plugin add espresso@espresso` |
+| Pi | `pi install npm:espresso-agent-tools` | `pi update` |
+| Prime Agent | `prime-agent package install /path/to/espresso` (a checkout) | `git pull` in the checkout |
+| OMP | `node src/hooks/install.js omp --apply` (from a checkout) | `git pull` in the checkout, then refresh the skill copies |
 
-**Codex**:
-```sh
-codex plugin marketplace add mirkobozzetto/espresso
-codex plugin add espresso@espresso
-```
-Review and trust the hooks in Codex before starting a new thread.
+In Claude Code, the same commands work as `/plugin …` inside a session.
 
-**Pi**: `pi install git:github.com/mirkobozzetto/espresso`
+**Codex** runs plugin hooks only once you trust them. Review them in Codex
+before starting a new thread, and again after an update: a changed hook gets a
+new hash.
 
-**OMP**, from a permanent checkout:
+**Pi and Prime Agent** load the extension, the six Ponytail skills and the
+Espresso skill from the package. Pi also accepts a checkout path
+(`pi install /path/to/espresso`). Keep a checkout in place when you install
+from it.
+
+**OMP** needs a permanent checkout:
 ```sh
 git clone https://github.com/mirkobozzetto/espresso.git
 cd espresso
 node src/hooks/install.js omp --apply
 ```
+The OMP extension imports the checkout, so `git pull` updates it. The skills
+are copies: the installer refuses to overwrite a copy that differs, so replace
+`~/.omp/agent/skills/espresso` and `~/.omp/agent/skills/ponytail*` with the
+checkout's `skills/` folders after pulling.
 
 For Codex skills without the marketplace, run `node src/hooks/install.js codex --apply`.
-Pi can alternatively use `node src/hooks/install.js pi --apply` for the extension
-and skill. Omit `--apply` to preview adapter files. Conflicting files are refused;
-settings, credentials and model overrides are untouched. Restart the harness.
-Keep this checkout in place when using a local extension reference.
+Omit `--apply` to preview adapter files. Conflicting files are refused;
+settings, credentials and model overrides are untouched.
 
 See [INSTALL.md](INSTALL.md) for upgrade and removal precautions. Existing
 Caveman/Ponytail installations and old global rules are not deleted automatically.
