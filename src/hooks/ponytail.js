@@ -16,8 +16,11 @@ try {
     context = mode === "off" ? "Ponytail is off." : getPonytailInstructions(mode);
   } else if (event === "SubagentStart") {
     mode = readMode();
-    if (!mode || mode === "off") process.exit(0);
-    context = getPonytailInstructions(mode);
+    const input = fs.readFileSync(0, "utf8").trim();
+    // The read-only scout writes no code: Ponytail would only cost context.
+    if ((input ? JSON.parse(input) : {}).agent_type === "espresso:scout") context = "";
+    else if (!mode || mode === "off") process.exit(0);
+    else context = getPonytailInstructions(mode);
   } else if (event === "UserPromptSubmit") {
     const data = JSON.parse(fs.readFileSync(0, "utf8"));
     const prompt = String(data.prompt || "").trim().toLowerCase().replace(/^[/@$](?:espresso:|ponytail:)?ponytail(?=\s|$)/, "/ponytail");
@@ -41,7 +44,7 @@ try {
     throw new Error("Expected SessionStart, SubagentStart or UserPromptSubmit.");
   }
   const output = {hookSpecificOutput: {
-    hookEventName: event, additionalContext: `${context}\n\n${POLICY}`,
+    hookEventName: event, additionalContext: [context, POLICY].filter(Boolean).join("\n\n"),
   }};
   // additionalContext is invisible in the UI; this one line tells the user what
   // runs. Codex renders systemMessage as a warning, so it stays silent there.

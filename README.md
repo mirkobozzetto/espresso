@@ -63,10 +63,17 @@ security and accessibility must remain intact.
 
 | Harness | Policy | Delegation |
 |---|---|---|
-| Claude Code | SessionStart hook and skill | Native subagents on the session model |
+| Claude Code | SessionStart hook and skill | Read-only `espresso:scout` and native subagents, all on the session model |
 | Codex | Trusted SessionStart hook and skill | Native agents on the session model |
 | OMP | Extension and skill | Native agents and an explicit text-only worker |
 | Pi | Extension and skill | Explicit text-only worker; core Pi has no subagent tool |
+
+In Claude Code, Espresso ships one agent, `espresso:scout`: read-only (no edit
+tools), on the session model (`model: inherit`), at medium effort, in the
+background. Claude picks it for research whose raw output would flood the
+conversation (multi-file search, flow tracing with GitNexus, docs, long logs),
+and you keep talking with the main thread while it works. Below the prompt,
+each running agent shows its model, effort and tokens.
 
 Espresso no longer routes delegated work to a cheaper model. With a strong
 session model, adding agents brings no gain or a loss on sequential coding
@@ -182,7 +189,9 @@ directly (per-project Ponytail modes, mode commands, visible status line,
 silence on Codex), the OMP/Pi extension against a simulated host (string, array
 and section prompts, same-model worker), selective RTK rewriting with RTK
 0.51.0, and a Codex 0.160.1 install in an isolated configuration listing the
-three bundled hooks. Full delegation sessions and comparative token/quality
-benchmarks were not run.
+three bundled hooks. For 2.3.0: the scout agent passes `claude plugin
+validate`, skips the Ponytail injection, and the agent status rows render from
+sample input. How often Claude picks the scout on its own, and comparative
+token/quality benchmarks, were not measured.
 
 MIT License.
