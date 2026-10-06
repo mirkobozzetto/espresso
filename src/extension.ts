@@ -1,4 +1,4 @@
-import { POLICY, lowerModel, rewriteCommand } from './core.cjs';
+import { POLICY, rewriteCommand } from './core.cjs';
 import ponytail from "../pi-extension/index.js";
 
 type Model = {provider: string; id: string};
@@ -71,8 +71,8 @@ export default function espresso(pi: Host, options: {auto?: boolean} = {}) {
   let auto = options.auto ?? false;
   let workerEffort = 'inherit';
   pi.registerCommand('espresso', {
-    description: 'Concise output and delegation: on, off, auto, manual, status, rtk-on, rtk-off, ladder, effort, worker',
-    getArgumentCompletions: prefix => ['on', 'off', 'auto', 'manual', 'status', 'rtk-on', 'rtk-off', 'ladder', 'effort inherit', 'effort low', 'effort medium', 'effort high', 'worker ']
+    description: 'Concise output and delegation: on, off, auto, manual, status, rtk-on, rtk-off, effort, worker',
+    getArgumentCompletions: prefix => ['on', 'off', 'auto', 'manual', 'status', 'rtk-on', 'rtk-off', 'effort inherit', 'effort low', 'effort medium', 'effort high', 'worker ']
       .filter(value => value.startsWith(prefix)).map(value => ({value, label: value})),
     handler: async (args, ctx) => {
       const notify = (text: string) => ctx.hasUI === false ? console.log(text) : ctx.ui.notify(text, 'info');
@@ -94,13 +94,13 @@ export default function espresso(pi: Host, options: {auto?: boolean} = {}) {
       else if (mode === 'off') { enabled = false; auto = false; }
       else if (mode === 'rtk-on') rtk = true;
       else if (mode === 'rtk-off') rtk = false;
-      else if (!['status', 'ladder', 'worker'].includes(mode)) throw new Error('Use on, off, auto, manual, status, rtk-on, rtk-off, ladder or worker <assignment>.');
+      else if (!['status', 'worker'].includes(mode)) throw new Error('Use on, off, auto, manual, status, rtk-on, rtk-off or worker <assignment>.');
       const model = ctx.models?.current() ?? ctx.model;
-      const catalog = ctx.models?.list() ?? ctx.modelRegistry?.getAvailable() ?? [];
       const current = model ? `${model.provider}/${model.id}` : '';
-      const target = lowerModel(current, catalog.map(m => `${m.provider}/${m.id}`));
+      // The worker keeps the session model: only its thinking effort changes.
+      const target = current;
       if (mode === 'worker') {
-        if (!enabled || !target) throw new Error('No enabled, available same-provider worker.');
+        if (!enabled || !target) throw new Error('No enabled session model for the worker.');
         const assignment = request.slice(7).trim();
         const resolved = workerEffort === 'inherit' ? (ctx.thinkingLevel ?? 'low') : workerEffort;
         if (!assignment) {
@@ -131,14 +131,8 @@ export default function espresso(pi: Host, options: {auto?: boolean} = {}) {
   });
   pi.on('before_agent_start', async (event, ctx) => {
     if (!enabled) return;
-    const model = ctx.models?.current() ?? ctx.model;
-    const catalog = ctx.models?.list() ?? ctx.modelRegistry?.getAvailable() ?? [];
-    const target = model && lowerModel(`${model.provider}/${model.id}`, catalog.map(m => `${m.provider}/${m.id}`));
-    const worker = target?.startsWith('openai-codex/gpt-5.6-') ? `espresso-${target.split('-').pop()}` : null;
-    const routing = worker && ctx.models
-      ? auto
-        ? ` Espresso automatic research delegation is enabled by the user. This is standing authorization for substantial independent read-only research, not code edits. After inspecting the task yourself, delegate only when at least two genuinely independent research slices justify the startup and context overhead. Use at most two ${worker} workers concurrently, one bounded assignment per worker, with explicit read-only scope and an evidence-based deliverable. Announce scope and selected agent briefly, then proceed without asking again unless a higher-priority instruction or active skill requires it. Do not delegate small questions, simple lookups or small corrections. Do not force delegation or invent work to fill slots. No nested delegation. Preserve explicit agent/model choices. Keep architecture, edits, integration and consequential review on the parent. Verify returned evidence proportionately; never claim token or quota savings. These are behavioral instructions, not a sandbox or enforced concurrency limit.`
-        : ` For authorized bounded delegation, prefer ${worker} if installed. Preserve explicit agent/model choices and keep consequential review on the parent model.`
+    const routing = auto && ctx.models
+      ? ` Espresso automatic research delegation is enabled by the user. This is standing authorization for substantial independent read-only research, not code edits. After inspecting the task yourself, delegate only when at least two genuinely independent research slices justify the startup and context overhead. Use at most two workers concurrently on the session model, one bounded assignment per worker, with explicit read-only scope and an evidence-based deliverable. Announce scope and selected agent briefly, then proceed without asking again unless a higher-priority instruction or active skill requires it. Do not delegate small questions, simple lookups or small corrections. Do not force delegation or invent work to fill slots. No nested delegation. Preserve explicit agent/model choices. Keep architecture, edits, integration and consequential review on the parent. Verify returned evidence proportionately; never claim token or quota savings. These are behavioral instructions, not a sandbox or enforced concurrency limit.`
       : '';
     const effortPolicy = ' For every authorized delegation, announce agent, resolved model, thinking effort and a short reason before launching. For named agents, read the effective agent configuration rather than inferring effort from the parent. Use low for simple bounded lookup/extraction; retain medium for cross-component analysis and medium/high for consequential review. If the selected research profile is low but the task needs deeper analysis, select an appropriately configured analysis/review agent instead. Never claim an unverified effective model or effort.';
     return {systemPrompt: `${event.systemPrompt}\n\n${POLICY}${routing}${effortPolicy}`};
