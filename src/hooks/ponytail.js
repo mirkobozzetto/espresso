@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 const fs = require("node:fs");
-const {getDefaultMode, writeDefaultMode, isDeactivationCommand} = require("../../hooks/ponytail-config.js");
+const {getDefaultMode, writeDefaultMode, isDeactivationCommand, getQuietStartup} = require("../../hooks/ponytail-config.js");
 const {getPonytailInstructions} = require("../../hooks/ponytail-instructions.js");
-const {setMode, clearMode, readMode} = require("../../hooks/ponytail-runtime.js");
+const {setMode, clearMode, readMode, isCodex} = require("../../hooks/ponytail-runtime.js");
 const {POLICY} = require("../core.cjs");
 
 try {
@@ -40,9 +40,14 @@ try {
   } else {
     throw new Error("Expected SessionStart, SubagentStart or UserPromptSubmit.");
   }
-  process.stdout.write(JSON.stringify({hookSpecificOutput: {
+  const output = {hookSpecificOutput: {
     hookEventName: event, additionalContext: `${context}\n\n${POLICY}`,
-  }}));
+  }};
+  // additionalContext is invisible in the UI; this one line tells the user what
+  // runs. Codex renders systemMessage as a warning, so it stays silent there.
+  const announce = event === "SessionStart" ? !getQuietStartup() : event === "UserPromptSubmit";
+  if (announce && !isCodex) output.systemMessage = `Espresso · Ponytail ${mode}`;
+  process.stdout.write(JSON.stringify(output));
 } catch (error) {
   process.stderr.write(`Ponytail: ${error.message}\n`);
   process.exitCode = 1;

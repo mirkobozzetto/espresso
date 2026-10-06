@@ -21,7 +21,7 @@ type Host = {
     getArgumentCompletions?(prefix: string): {value: string; label: string}[];
     handler(args: string, ctx: Context): Promise<void>;
   }): void;
-  on(event: 'before_agent_start', handler: (event: {systemPrompt: string}, ctx: Context) => Promise<{systemPrompt: string} | undefined>): void;
+  on(event: 'before_agent_start', handler: (event: {systemPrompt: string | string[]; systemPromptOptions?: {sections?: Record<string, string>}}, ctx: Context) => Promise<{systemPrompt: string | string[]} | undefined>): void;
   on(event: 'tool_call', handler: (event: {toolName: string; input: Record<string, unknown>}, ctx: Context) => Promise<{input: Record<string, unknown>} | undefined>): void;
 };
 
@@ -130,12 +130,24 @@ export default function espresso(pi: Host, options: {auto?: boolean} = {}) {
     },
   });
   pi.on('before_agent_start', async (event, ctx) => {
-    if (!enabled) return;
+    const sections = event.systemPromptOptions?.sections;
+    if (!enabled) {
+      if (sections) delete sections.espresso;
+      return;
+    }
     const routing = auto && ctx.models
       ? ` Espresso automatic research delegation is enabled by the user. This is standing authorization for substantial independent read-only research, not code edits. After inspecting the task yourself, delegate only when at least two genuinely independent research slices justify the startup and context overhead. Use at most two workers concurrently on the session model, one bounded assignment per worker, with explicit read-only scope and an evidence-based deliverable. Announce scope and selected agent briefly, then proceed without asking again unless a higher-priority instruction or active skill requires it. Do not delegate small questions, simple lookups or small corrections. Do not force delegation or invent work to fill slots. No nested delegation. Preserve explicit agent/model choices. Keep architecture, edits, integration and consequential review on the parent. Verify returned evidence proportionately; never claim token or quota savings. These are behavioral instructions, not a sandbox or enforced concurrency limit.`
       : '';
     const effortPolicy = ' For every authorized delegation, announce agent, resolved model, thinking effort and a short reason before launching. For named agents, read the effective agent configuration rather than inferring effort from the parent. Use low for simple bounded lookup/extraction; retain medium for cross-component analysis and medium/high for consequential review. If the selected research profile is low but the task needs deeper analysis, select an appropriately configured analysis/review agent instead. Never claim an unverified effective model or effort.';
-    return {systemPrompt: `${event.systemPrompt}\n\n${POLICY}${routing}${effortPolicy}`};
+    const text = `${POLICY}${routing}${effortPolicy}`;
+    // Same order as Ponytail: a named section keeps Pi's cached prefix, and OMP
+    // hands an array that string concatenation would flatten with commas.
+    if (sections && typeof sections === 'object') {
+      sections.espresso = text;
+      return;
+    }
+    if (Array.isArray(event.systemPrompt)) return {systemPrompt: [...event.systemPrompt, text]};
+    return {systemPrompt: `${event.systemPrompt}\n\n${text}`};
   });
   pi.on('tool_call', async (event, ctx) => {
     if (!enabled || !rtk || event.toolName !== 'bash') return;

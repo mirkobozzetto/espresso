@@ -30,7 +30,7 @@ See [RTK's measurement definition](https://github.com/rtk-ai/rtk/blob/develop/do
 ## Smaller code: Ponytail included
 
 Espresso bundles the real [Ponytail](https://github.com/DietrichGebert/ponytail)
-4.9.0 runtime and all six upstream skills, with its MIT license and pinned
+4.13.0 runtime and all six upstream skills, with its MIT license and pinned
 source commit in `ponytail-upstream.json`. No separate installation or startup
 download is needed. It starts in **full** mode unless an existing Ponytail
 configuration or `PONYTAIL_DEFAULT_MODE` overrides that default.
