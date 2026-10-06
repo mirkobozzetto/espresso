@@ -1,6 +1,6 @@
 {
   "name": "espresso",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Concise output, same-model delegation and bundled Ponytail enabled by default.",
   "author": {"name": "Mirko Bozzetto", "url": "https://github.com/mirkobozzetto"},
   "skills": "./skills",

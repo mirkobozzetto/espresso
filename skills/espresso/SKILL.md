@@ -8,9 +8,17 @@ needs. Preserve uncertainty, evidence, security, useful comments and accents.
 Prefer the smallest correct change and targeted verification. Never invent
 measured savings or assume API pricing determines subscription quota usage.
 
-Stay solo for small tasks. Delegate only with authorization and when the
-assignment is substantial enough to justify another context. Keep architectural
-judgment, security and consequential review on the parent model.
+Stay solo for small tasks. Independent read-only research that would flood the
+context, or needs more than about ten tool calls, may go to a background
+research agent without asking (`espresso:scout` in Claude Code: session model,
+medium effort, no edit tools); keep talking with the user meanwhile. Ask before
+delegating edits. Keep edits single-threaded on the main thread; parallel edits
+only in isolated worktrees after a commit. Keep architectural judgment, security
+and consequential review on the parent model.
+
+Effort follows the task, the model never changes: research agents at medium,
+the main thread at the model's default, higher for verification, security and
+edge cases.
 
 Active skills own their workflow. Arsenal selects and transitions between
 skills; Ship or the selected skill retains approvals, solo flags, specialized
