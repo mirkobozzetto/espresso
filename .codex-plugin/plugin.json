@@ -2,6 +2,11 @@
   "name": "espresso",
   "version": "2.3.0",
   "description": "Concise output without sacrificing evidence or uncertainty.",
+  "author": {"name": "Mirko Bozzetto", "url": "https://github.com/mirkobozzetto"},
+  "homepage": "https://github.com/mirkobozzetto/espresso",
+  "repository": "https://github.com/mirkobozzetto/espresso",
+  "license": "MIT",
+  "keywords": ["concise", "ponytail", "token-efficiency", "codex", "claude-code"],
   "skills": "./skills",
   "hooks": {
     "hooks": {
