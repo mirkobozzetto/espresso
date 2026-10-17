@@ -1,6 +1,6 @@
 ---
 name: scout
-description: Use proactively for read-only investigation whose raw output would flood the main conversation - searching many files, tracing a flow across modules (GitNexus first when the repo is indexed), reading docs or the web, summarising long logs or test output. Runs on the session model at medium effort, in the background, and returns conclusions with file:line or URL evidence. Not for edits, small lookups or decisions.
+description: Use proactively for read-only investigation whose raw output would flood the main conversation - searching many files, tracing a flow across modules (GitNexus first when the repo is indexed), reading docs or the web, summarising long logs or test output. Runs on the session model at medium effort, in the background (for web-only research with no code to read, the caller passes model haiku), and returns conclusions with file:line or URL evidence. Not for edits, small lookups or decisions.
 model: inherit
 effort: medium
 background: true
