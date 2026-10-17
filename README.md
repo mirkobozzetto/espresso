@@ -203,7 +203,9 @@ and section prompts, same-model worker), selective RTK rewriting with RTK
 three bundled hooks. For 2.3.0: the scout agent passes `claude plugin
 validate`, skips the Ponytail injection, and the agent status rows render from
 sample input. How often Claude picks the scout on its own, and comparative
-token/quality benchmarks, were not measured. The Haiku web-research timings
-come from two runs per model on one brief, not a benchmark.
+token/quality benchmarks, were not measured. For 2.4.0: the hooks inject the
+web-only Haiku rule, the scout still skips Ponytail, and `claude plugin
+validate` passes. The Haiku web-research timings come from two runs per model
+on one brief, not a benchmark.
 
 MIT License.
